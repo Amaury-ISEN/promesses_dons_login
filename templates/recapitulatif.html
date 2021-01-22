@@ -1,0 +1,25 @@
+<!--  Pour hériter du modèle base.html : -->
+{% extends 'base.html' %}
+
+{% block content %}
+    <title>Récapitulatif</title>
+    <h1>{% block title %}Récapitulatif des dons :{% endblock %}</h1>
+    {% for promesse in promesses %}
+        <a href="#">
+
+            {% for i in promesse %}
+            <a href="#">
+                <h2>{{i}} : {{promesse[i]}}</h2>
+            </a>
+            {% endfor %}
+    
+
+        </a>
+        <hr>
+    {% endfor %}
+    <br>
+
+    <h1>Somme totale des dons :</h1>
+    <h2>Le total des dons est de {{total}} euros.</h2>
+
+{% endblock %}

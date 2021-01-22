@@ -1,0 +1,21 @@
+<!--  Pour hériter du modèle base.html : -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>S'inscrire</h1>
+    
+    <form action="/signMeUp" method="POST">
+        <label class="labelCentres" for name="mail">Nom :</label>
+        <input class type="text" required name="username">
+        <br>
+        <label class="labelCentres" for name="mail">Mot de passe: </label>
+        <input type="password" required name="password">
+        <br>
+        <button class="btn btn-outline-dark" type="submit" id="envoyer">Valider</button>
+        <br>
+
+    </form>
+
+    
+{% endblock %}

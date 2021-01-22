@@ -1,0 +1,68 @@
+<!--  Pour hériter du modèle base.html : -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>Réaliser un don</h1>
+    <p>Voici Pilou. Il va bientôt mourir de faim, de froid et de la covid s'il n'est pas euthanasié avant.</p>
+        <img src="{{ url_for('static', filename= 'img/sad_dog.jpg') }}" alt="Image d'un chien triste." class="center"/>
+        <br>
+    <p>Il a déjà été abandonné QUATRE fois sur le bord de la route à cause de son boîtement dû à des maltraitances passées.
+        "Pourquoi tant de haine ? Tant de violence ? Je suis pourtant un bon toutou !" semblent nous dire ses yeux larmoyants.</p>
+        
+    <p>Victime innocente du sombre coeur des hommes, il fait partie de ces milliers d'animaux livrés à eux-mêmes et condamnés à une fin de vie terrible.
+        Au jour d'aujourd'hui, le pauvre animal n'a plus aucun espoir de rédemption.</p>
+    <p>A moins que...
+        <br>
+        Oui! 
+        <br>
+        VOUS pouvez SAUVER Pilou et tant d'autres animaux en détresse !
+        Comment ? C'est tout simple !
+        <br>
+            Il vous suffit de faire un don à 31 Millions d'amis !
+    </p>
+        <br>
+        <form action="{{ url_for('gestion_formulaire') }}" method="post">
+            <label class="labelCentres" for name="nom">Nom : </label>
+            <!-- La requête -->
+            <!-- Les values prérenseignées permettent de garder en mémoire les informations saisies même en cas de refresh -->
+            <input type="txt" required name="nom" value="{{ request.form['nom'] }}">
+            <br>
+
+            <label class="labelCentres" for name="prenom">Prénom : </label>
+            <input type="txt" required name="prenom" value="{{ request.form['prenom'] }}">
+            <br>
+
+            <label class="labelCentres" for name="adresse">Adresse : </label>
+            <input type="txt" required name="adresse" value="{{ request.form['adresse'] }}">
+            <br>
+
+            <label class="labelCentres" for name="mail">Mail : </label>
+            <input type="email" required name="mail" value="{{ request.form['mail'] }}">
+            <br>
+
+            <label class="labelCentres" for name="somme">Somme (€) : </label>
+            <input type="number" min="1" required name="somme" value="{{ request.form['somme'] }}">
+            <br>
+            
+            <div class="center">
+                <label for name="CGUAcceptees">
+                    <input type="checkbox" required name="CGUAcceptees">
+                    J'ai pris connaissance des conditions*.
+                </label>
+            </div>
+            
+            <br>
+
+            <button class="btn btn-outline-dark" type="submit" id="envoyer">Envoyer</button>
+        </form>
+    </p>
+
+
+    <p id="conditions">(*) Conditions : une promesse de don est une obligation contractuelle et sa non-concrétisation est
+        passible de poursuites pénales. Dans le cadre de notre démarche qualité il est possible que tout ou partie des
+        informations que vous avez communiquées soient transmises à nos partenaires. Vous indiquez le montant du don à
+        titre indicatif mais nous nous réservons le droit de procéder à des prélèvements ultérieurs.
+    </p>
+
+{% endblock %}

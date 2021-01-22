@@ -1,0 +1,20 @@
+<!--  Pour hériter du modèle base.html : -->
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h1>L'association</h1>
+    <p>
+        L'association 31 millions d'amis est une structure associative parfaitement légale fondée aux alentours de 2012.
+        Elle se donne pour mission d'éventuellement aider les petits chiens myopathes atteints du cancer à réaliser leurs
+        rêves canins ou quelque chose de cet ordre-là. Il est possible que <strong>Killian Mbappé</strong> et <strong>Antoine
+        Griezmann</strong> soient les parrains de l'association, en tout cas, ce n'est ni <strong>Omar Sy</strong> ni <strong>
+        Yannick Noah</strong> ou encore moins des grands noms tels que <strong>Zinédine Zidane</strong>, <strong>Brigitte Bardot
+        </strong> ou bien <strong>Coluche</strong>.
+    </p>
+
+    <img class="center" src="{{ url_for('static', filename= 'img/coluche.jpg') }}" alt="Photographie de Michel Colucci dit Coluche."/>
+    <br>
+
+    
+{% endblock %}
