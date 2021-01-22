@@ -14,7 +14,6 @@ from flask import Flask, render_template, request, redirect, flash, url_for, ses
 from werkzeug.exceptions import abort
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 from flask_wtf import FlaskForm
@@ -59,15 +58,13 @@ class User(UserMixin, db.Model):
     # On crée les colonnes/attributs de notre table d'utilisateurs :
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), unique=True)
-    password = db.Column(db.String(50))
+    password = db.Column(db.String(150))
     priviledge = db.Column(db.String(30))
 
 @login_manager.user_loader
-@app.route('/turlututu')
 def load_user(user_id):
     """Retourne l'objet python SQLAlchemy utilisateur qui correspond à l'id passé en paramètre user_id."""
     return User.query.get(int(user_id))
-
 
 @app.route('/login')
 def login():
@@ -81,64 +78,76 @@ def sign_up():
 # La route utilisée lors de la validation du form dans la page sign up :
 @app.route('/signMeUp', methods=['POST'])
 def signMeUp():
-    # Création de la table "user" dans la database "login.db" sur la base du modèle défini dans la classe User grâce au create_all() :
+    # # Création de la table "user" dans la database "login.db" sur la base du modèle défini dans la classe User grâce au create_all() :
     db.create_all()
 
+    # Récupération des username et password renseignés par l'utilisateur dans le form de sign_up.hmtl : 
     username = request.form['username']
     password = request.form['password']
+    # Hashage et salting du password grâce à Werkzeug :
+    password_hashed = generate_password_hash(password)
 
     # Vérification que le nom d'utilisateur est libre :
     user = User.query.filter_by(username=username).first()
     if user:
-        return "Veuillez choisir un autre nom."
+        flash("Veuillez choisir un autre nom d'utilisateur.")
+        return render_template("sign_up.html")
+        
+    # Si un utilisateur préexistant avec le même pseudo n'a pas été trouvé :
+    else :
+        # Création d'un objet utilisateur :
+        utilisateur = User(username = username, password = password_hashed, priviledge = "Admin")
 
-    # Création d'un objet utilisateur :
-    utilisateur = User(username = username, password = password, priviledge = "Admin")
+        # Ajout de l'utilisateur en base et commit :
+        db.session.add(utilisateur)
+        db.session.commit()
+        db.session.close()
 
-    # Ajout de l'utilisateur en base et commit :
-    db.session.add(utilisateur)
-    db.session.commit()
-    db.session.close()
+        flash("Vous êtes inscrit et pouvez vous connecter !")
+        return redirect("/")
 
-    return "Vous êtes inscrit et pouvez vous connecter !"
 
 # La route utilisée lors de l'inscrimtion dans la page log in :
 @app.route('/logMeIn', methods=['POST'])
 def logMeIn():
+    # Option pour rester connecté (prévoir de requérir un fresh login en cas de création d'option pour modifier son mdp)
     se_rappeler = True
     username = request.form['username']
     password = request.form['password']
-
+    
     # On récupère l'objet utilisateur qui correspond aux infos renseignées par l'utilisateur dans le formulaire HTML :
-    user = User.query.filter_by(username=username, password=password).first()
+    user = User.query.filter_by(username=username).first()
 
     # Si l'utilisateur n'est pas trouvé avec les infos renseignées en formulaire, on retourne un message d'erreur :
     if not user:
-        return "<h1>Cet utilisateur n'a pas été trouvé.</h1>"
+        flash("Cet utilisateur n'a pas été trouvé.")
+        return render_template("login.html")
 
-    login_user(user, remember=se_rappeler)
+    # Vérification que le password renseigné pour login correspond bien au password hashé stocké en base :
+    if check_password_hash(user.password, password):
+        # On peut loguer l'utilisateur :
+        login_user(user, remember=se_rappeler)
+        flash("Vous êtes connecté, "+str(current_user.username)+" !")
+        
+    else:
+        flash("Cet utilisateur n'a pas été trouvé.")
+        return render_template("login.html")
 
     # Si next est dans la session on affecte sa valeur à une variable next pour pouvoir faire la redirection après login :
     if 'next' in session:
         next = session['next']
-        # Redirection vers l'url next :
+        # Redirection vers l'url stockée dans la var next :
         return redirect(next)
 
-    return "Vous êtes connecté, "+str(current_user.username)+" !"
-
-
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
-    return "Vous êtes déconnecté !"
-
-##############
-##  ROUTES  ##
-##############
+    flash("Vous êtes déconnecté !")
+    return redirect("/")
 
 @app.route('/')
 def index():
+    session['next'] = "/"
     return render_template('index.html')
 
 @app.route('/promesse_don')
